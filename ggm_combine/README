@@ -1,0 +1,40 @@
+ggm_combine: written by Jeremy Sanders, released under the GPLv2+
+
+ggm_combine is a GUI tool for combining together GGM-filtered images
+with different scales. It presents a control for varying the scaling
+with radius for each input image. A checkbox for each image also
+allows scales to be switched on and off.
+
+Requirements: Python 2.7, PyQt4, numpy, pyfits, PyYaml, ds9
+
+The current implementation is VERY BASIC and USER-UNFRIENDLY, so
+please feel free to send improvements to the code.
+
+The user has to create a series of fits files with the GGM-filtered
+images which should be combined (e.g. using scales of
+sigma=1,2,4,8,16...)
+
+The user should then copy the template ggm_combine.yml. The file
+should be edited to set:
+
+ - The central pixel (to measure radii from), based from 0
+ - An optional chop range to speed up the interactive modification
+   (note this can be enabled/disabled as necessary)
+ - Output filename, written to while the program is used
+ - List of input filenames, and scaling values
+
+To use the program
+
+# start an instance of ds9
+ds9 &
+
+# run the interactive GUI
+./interactive.py input.yml &
+
+As the scaling radii and scales are modified, the output values are
+written to out-pars.yml. Rename this to something safe (and the output
+fits file) if you want to keep a particular set of parameters.
+
+To modify the number of radial points, the yml file has to be edited.
+
+Note that WCS is lost in the output file!

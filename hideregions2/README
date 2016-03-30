@@ -1,0 +1,27 @@
+hideregions2: Tool to fill in point sources with random values from
+the surrounding pixels. It's only tested for Chandra images.
+
+Copyright Jeremy Sanders, released under the GPLv2+.
+
+hideregions2 is a C++ code which links against the CIAO region
+libraries. It uses a C++ wrapper library to CIAO (dmxx).
+
+Requirements for building:
+ - Chandra CIAO environment running
+ - C++ compiler (only gcc g++ tested)
+
+To build inspect the Makefile (and dm/Makefile) and run
+
+# make all
+
+If all went well, you'll have a hideregions2 executable.
+
+To use, run
+
+# hideregions2 in.fits points.reg out.fits
+
+Note that points.reg must be a CIAO region file in PHYSICAL
+COORDINATES. Only circle and ellipse regions are supported!
+
+WCS data are lost in the output file!
+

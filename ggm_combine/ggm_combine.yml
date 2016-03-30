@@ -1,0 +1,38 @@
+image:
+  # central pixel (from 0) to calculate radii from
+  centre: [1659, 1449]
+  chop:
+    # to speed up combination, choose a pixel range below to chop the
+    # input images, and set enable to True
+    range: [980, 930, 2210, 1840]
+    enable: False
+
+  # output filename to write combined image
+  outfilename: filtered.fits
+
+# these are the input scales to combine (any number are allowed)
+
+# each entry is
+#  image filename (each needs to be the same size)
+#  list of radii in pixels (increase as necessary)
+#  weight factors for each radius position (same number as for radii)
+
+data:
+  - filename: expcorr_total_nopts_ggm1.fits.gz
+    weightrad: [0,20,40,80,160,320,640,1280]
+    weightvals: [1,1,0,0,0,0,0,0]
+  - filename: expcorr_total_nopts_ggm2.fits.gz
+    weightrad: [0,20,40,80,160,320,640,1280]
+    weightvals: [2,2,2,0,0,0,0,0]
+  - filename: expcorr_total_nopts_ggm4.fits.gz
+    weightrad: [0,20,40,80,160,320,640,1280]
+    weightvals: [0,4,4,4,0,0,0,0]
+  - filename: expcorr_total_nopts_ggm8.fits.gz
+    weightrad: [0,20,40,80,160,320,640,1280]
+    weightvals: [0,0,8,8,8,0,0,0]
+  - filename: expcorr_total_nopts_ggm16.fits.gz
+    weightrad: [0,20,40,80,160,320,640,1280]
+    weightvals: [0,0,0,10,10,10,0,0]
+  - filename: expcorr_total_nopts_ggm32.fits.gz
+    weightrad: [0,20,40,80,160,320,640,1280]
+    weightvals: [0,0,0,0,10,10,10,10]
