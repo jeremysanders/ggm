@@ -1,5 +1,5 @@
 This repository contains useful utilities for Gaussian gradient
-filtering of X-ray images.
+filtering of astronomical FITS images.
 
 The programs are described in
 
@@ -15,7 +15,6 @@ Detecting edges in the X-ray surface brightness of galaxy clusters,
 J.S. Sanders, A.C. Fabian, H.R. Russell, S.A. Walker, K.M. Blundell,
 2016, MNRAS, submitted
 
-
 All software is Copyright Jeremy Sanders and released under the GNU
 GPLv2+.
 
@@ -23,7 +22,8 @@ gaussian_gradient_magnitude.py
 ------------------------------
 
 The main program is gaussian_gradient_magnitude.py. This utility
-filters and input fits image with a particular scale, sigma.
+applies the gaussian gradient magnitude filter to an input fits image,
+using a particular scale, sigma, in pixels.
 
 Requirements:
  - Python 2.7, pyfits, numpy, scipy
@@ -37,7 +37,7 @@ Where sigma is a floating point value >0
 hideregions2
 ------------
 
-This is a tool to cosmetically hide point sources in X-ray images. It
+This is a tool to cosmetically hide point sources in fits images. It
 fills point sources with random values from the surrounding pixel
 region. See hideregions2/README for details.
 

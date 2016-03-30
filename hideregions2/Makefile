@@ -11,7 +11,7 @@ ALL_CXXFLAGS = -I. -I${ASCDS_LIB}/../include $(CXXFLAGS)
 all: hideregions2
 
 clean:
-	rm -f hideregions2
+	rm -f hideregions2 *.o
 	@${MAKE} -C dm clean
 
 dm/libdmxx.a:

@@ -6,7 +6,7 @@ objects = dataset.o general.o descriptor.o image.o block.o memimage.o coord.o
 all: libdmxx.a test.out
 
 clean:
-	rm *.o libdmxx.a
+	rm -f *.o libdmxx.a
 
 dataset.o: dataset.hh image.hh block.hh
 general.o: general.hh
