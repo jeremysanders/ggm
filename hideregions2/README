@@ -9,6 +9,7 @@ libraries. It uses a C++ wrapper library to CIAO (dmxx).
 Requirements for building:
  - Chandra CIAO environment running
  - C++ compiler (only gcc g++ tested)
+ - Boost library
 
 To build inspect the Makefile (and dm/Makefile) and run
 
