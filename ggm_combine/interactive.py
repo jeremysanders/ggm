@@ -7,6 +7,7 @@ import os
 import glob
 from random import choice
 from string import ascii_uppercase
+from math import floor
 
 import qt
 import yaml
@@ -69,7 +70,9 @@ class ImageContainer:
             if chop:
                 dy = chop[3]-chop[1]
                 dx = chop[2]-chop[0]
-                image_cutout = Cutout2D(image, (xc, yc), (dy, dx), wcs=w)
+                x0 = floor((chop[0] + chop[2])/2)
+                y0 = floor((chop[1] + chop[3])/2)
+                image_cutout = Cutout2D(image, (x0, y0), (dy, dx), wcs=w)
                 image = image_cutout.data
                 if i == 0:
                     new_w = image_cutout.wcs
@@ -114,7 +117,6 @@ class ImageContainer:
         out = N.zeros(self.images[0].shape)
         for image, radii, weights, scale in zip(
             self.images, self.radii, self.weights, self.scales):
-            print(N.min(image), N.max(image))
             if scale > 0:
                 print(id(image))
                 print('radii', radii)
@@ -138,7 +140,6 @@ class Window(qt.QWidget):
             self.pars = pars = yaml.load(f)
 
         self.images = ImageContainer(pars)
-        print(dir(self.images))
 
         def getOnChanged(idx):
             def func(vals):
@@ -191,7 +192,7 @@ class Window(qt.QWidget):
     def redraw(self):
         img = self.images.filterAdd()
         tmp_file = max(glob.iglob('tmp*'), key=os.path.getctime)
-        print(tmp_file)
+        print('Temporary header file: %s.' % tmp_file)
         hdr = fits.Header.fromtextfile(tmp_file)
         ds9xpa(img, hdr, filename=self.pars['image']['outfilename'])
         self.images.writeOutputPars('out-pars.yml')
