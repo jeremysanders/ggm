@@ -7,7 +7,8 @@ import os
 
 import qt
 import yaml
-import pyfits
+from astropy.io import fits
+from astropy.wcs import WCS
 import numpy as N
 
 import curvecontrol
@@ -23,9 +24,9 @@ def ds9xpa(img, filename=None):
         except OSError:
             pass
 
-    hdu = pyfits.PrimaryHDU()
+    hdu = fits.PrimaryHDU()
     hdu.data = img
-    hdus = pyfits.HDUList([hdu])
+    hdus = fits.HDUList([hdu])
     hdus.writeto(tempfn)
 
     os.system('xpaset ds9 fits < %s' % tempfn)
@@ -49,7 +50,7 @@ class ImageContainer:
 
         for d in pars['data']:
             print('Loading', d['filename'])
-            with pyfits.open(d['filename']) as f:
+            with fits.open(d['filename']) as f:
                 image = f[0].data
             if chop:
                 image = image[chop[1]:chop[3],chop[0]:chop[2]]
