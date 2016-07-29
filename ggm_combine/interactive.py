@@ -4,15 +4,21 @@ from __future__ import division, print_function
 
 import sys
 import os
+import glob
+from random import choice
+from string import ascii_uppercase
+from math import floor
 
 import qt
 import yaml
-import pyfits
+from astropy.io import fits
+from astropy.wcs import WCS
+from astropy.nddata import Cutout2D
 import numpy as N
 
 import curvecontrol
 
-def ds9xpa(img, filename=None):
+def ds9xpa(img, hdr, filename=None):
     """Send data to ds9 via xpa."""
     if filename is None:
         tempfn = '/tmp/temp_xpa_%i.fits' % os.getpid()
@@ -23,9 +29,10 @@ def ds9xpa(img, filename=None):
         except OSError:
             pass
 
-    hdu = pyfits.PrimaryHDU()
+    hdu = fits.PrimaryHDU(header=hdr)
     hdu.data = img
-    hdus = pyfits.HDUList([hdu])
+
+    hdus = fits.HDUList([hdu])
     hdus.writeto(tempfn)
 
     os.system('xpaset ds9 fits < %s' % tempfn)
@@ -47,13 +54,29 @@ class ImageContainer:
         else:
             chop = None
 
-        for d in pars['data']:
+        xc, yc = pars['image']['centre']
+        for i, d in enumerate(pars['data']):
             print('Loading', d['filename'])
-            with pyfits.open(d['filename']) as f:
+            with fits.open(d['filename']) as f:
                 image = f[0].data
+                # build a wcs object the hacky way
+                if i == 0:
+                    hdr = f[0].header
+                    w = WCS(naxis=2)
+                    w.wcs.crval = [hdr['CRVAL1'], hdr['CRVAL2']]
+                    w.wcs.cdelt = [hdr['CDELT1'], hdr['CDELT2']]
+                    w.wcs.crpix = [hdr['CRPIX1'], hdr['CRPIX2']]
+                    w.wcs.ctype = [hdr['CTYPE1'], hdr['CTYPE2']]
             if chop:
-                image = image[chop[1]:chop[3],chop[0]:chop[2]]
-
+                dy = chop[3]-chop[1]
+                dx = chop[2]-chop[0]
+                x0 = floor((chop[0] + chop[2])/2)
+                y0 = floor((chop[1] + chop[3])/2)
+                image_cutout = Cutout2D(image, (x0, y0), (dy, dx), wcs=w)
+                image = image_cutout.data
+                if i == 0:
+                    new_w = image_cutout.wcs
+                    hdr = new_w.to_header()
             self.images.append(image)
 
             radii = N.array(d['weightrad'], dtype=N.float64)
@@ -62,8 +85,11 @@ class ImageContainer:
             maxval = round(N.max(weightvals), 2)
             self.scales.append(maxval)
             self.weights.append(weightvals/maxval)
+        # set the header, which will be used later when writing the file
+        some_random_str = ''.join(choice(ascii_uppercase) for i in range(10))
+        with open('tmp' + some_random_str, 'w') as f:
+            hdr.totextfile(f, clobber=False)
 
-        xc, yc = pars['image']['centre']
         if chop:
             xc -= chop[0]
             yc -= chop[1]
@@ -165,7 +191,10 @@ class Window(qt.QWidget):
 
     def redraw(self):
         img = self.images.filterAdd()
-        ds9xpa(img, filename=self.pars['image']['outfilename'])
+        tmp_file = max(glob.iglob('tmp*'), key=os.path.getctime)
+        print('Temporary header file: %s.' % tmp_file)
+        hdr = fits.Header.fromtextfile(tmp_file)
+        ds9xpa(img, hdr, filename=self.pars['image']['outfilename'])
         self.images.writeOutputPars('out-pars.yml')
 
 def main():

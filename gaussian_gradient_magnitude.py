@@ -1,15 +1,13 @@
-#!/usr/bin/env python
-
 import sys
 import os
 import argparse
 
-import pyfits
+from astropy.io import fits
 import scipy.ndimage
 import numpy as N
 
 def run(infile, outfile, scale):
-    f = pyfits.open(infile)
+    f = fits.open(infile)
     img = f[0].data
 
     # convert to float if required

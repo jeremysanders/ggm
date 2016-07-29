@@ -73,7 +73,7 @@ class CurveScene(qt.QGraphicsScene):
 
         path = qt.QPainterPath()
         path.moveTo(qt.QPointF(xpts[0], ypts[0]))
-        for x, y in itertools.izip(xpts[1:], ypts[1:]):
+        for x, y in zip(xpts[1:], ypts[1:]):
             path.lineTo(qt.QPointF(x,y))
         self.pathitem.setPath(path)
 
