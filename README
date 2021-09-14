@@ -65,7 +65,7 @@ The program relies on the installation of the contour binning package
 
 Which should be available in the current PATH or can be pointed to
 using the --contbin-dir=DIR option. contbin needs to be up to date to
-incldue the latest accumulate_counts program.
+include the latest accumulate_counts program.
 
 The program takes as input a counts image to compute the smoothing
 scale. It then smooths this counts image (or an optional input image
@@ -90,7 +90,9 @@ the input counts image. At present the smoothing radius contains at
 least sn-squared counts. There is an intermediate generated file
 containing the smoothing scale (--scale=FILENAME) which contains the
 radius-squared in pixels of the smoothing scale (the radius is used as
-the Gaussian sigma when smoothing).
+the Gaussian sigma when smoothing). There is a second intermediate
+file which is the smoothed image (specified using
+--smoothed=FILENAME).
 
 An example usage:
 
@@ -99,7 +101,7 @@ $ ./adaptive_ggm.py --sn=32 cts.fits grad.fits
 The full set of arguments include:
 
 $ ./adaptive_ggm.py --help
-usage: adaptive_ggm.py [-h] [--image IMAGE] [--sn SN] [--log LOG] [--mask MASK] [--scale SCALE] [--smimage SMIMAGE]
+usage: adaptive_ggm.py [-h] [--image IMAGE] [--sn SN] [--log LOG] [--mask MASK] [--scale SCALE] [--smoothed SMOOTHED]
                        [--threads THREADS] [--contbin-dir CONTBIN_DIR]
                        counts output
 
@@ -116,7 +118,7 @@ optional arguments:
   --log LOG             Calculate log after smoothing (default: True)
   --mask MASK           Mask image (optional) (default: None)
   --scale SCALE         Intermediate scale map filename (default: scale.fits)
-  --smimage SMIMAGE     Intermediate smoothed image filename (default: smoothed.fits)
+  --smoothed SMOOTHED   Intermediate smoothed image filename (default: smoothed.fits)
   --threads THREADS     Number of threads to use when smoothing (default: 4)
   --contbin-dir CONTBIN_DIR
                         Override location of contour binning code (default: None)

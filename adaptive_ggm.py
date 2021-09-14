@@ -57,7 +57,7 @@ def main():
     parser.add_argument('--log', type=bool, default=True, help='Calculate log after smoothing')
     parser.add_argument('--mask', help='Mask image (optional)')
     parser.add_argument('--scale', help='Intermediate scale map filename', default='scale.fits')
-    parser.add_argument('--smimage', help='Intermediate smoothed image filename', default='smoothed.fits')
+    parser.add_argument('--smoothed', help='Intermediate smoothed image filename', default='smoothed.fits')
     parser.add_argument('--threads', type=int, default=4, help='Number of threads to use when smoothing')
     parser.add_argument('--contbin-dir', help='Override location of contour binning code')
 
@@ -90,7 +90,7 @@ def main():
         inimage,
         '--apply',
         '--scale=%s' % args.scale,
-        '--applied=%s' % args.smimage,
+        '--applied=%s' % args.smoothed,
         '--threads=%i' % args.threads,
         '--gaussian',
     ]
@@ -101,7 +101,7 @@ def main():
 
     # get gradient
     print('* Calculating gradient')
-    smf = fits.open(args.smimage, 'readonly')
+    smf = fits.open(args.smoothed, 'readonly')
     smimg = smf[0].data
     grad = calcGradient(smimg, args.log)
     smf.close()
