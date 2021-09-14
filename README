@@ -15,6 +15,12 @@ Detecting edges in the X-ray surface brightness of galaxy clusters,
 J.S. Sanders, A.C. Fabian, H.R. Russell, S.A. Walker, K.M. Blundell,
 2016, MNRAS, accepted, http://arxiv.org/abs/1605.02911
 
+and
+
+Studying the merging cluster Abell 3266 with eROSITA
+J.S. Sanders et al.
+2021, A&A submitted, https://arxiv.org/abs/2106.14534
+
 All software is Copyright Jeremy Sanders and released under the GNU
 GPLv2+.
 
@@ -26,11 +32,11 @@ applies the gaussian gradient magnitude filter to an input fits image,
 using a particular scale, sigma, in pixels.
 
 Requirements:
- - Python 2.7, pyfits, numpy, scipy
+ - Python 3.x, astropy, scipy, numpy
 
 To run, type
 
-./gaussian_gradient_magnitude.py in.fits out.fits sigma
+$ ./gaussian_gradient_magnitude.py in.fits out.fits sigma
 
 Where sigma is a floating point value >0
 
@@ -46,3 +52,71 @@ ggm_combine
 
 This is an interactive tool to combine fits images filtered on
 different scales. See ggm_combine/README for details.
+
+adaptive_ggm.py
+---------------
+
+This is an automated script to compute the adaptive GGM (used in
+Sanders et al. 2021).
+
+The program relies on the installation of the contour binning package
+
+ https://github.com/jeremysanders/contbin
+
+Which should be available in the current PATH or can be pointed to
+using the --contbin-dir=DIR option. contbin needs to be up to date to
+incldue the latest accumulate_counts program.
+
+The program takes as input a counts image to compute the smoothing
+scale. It then smooths this counts image (or an optional input image
+given by --image=FILENAME) using these smoothing scales. The optional
+input image is to allow background subtraction or other
+manipulation. The gradient is computed from the log of the smoothed
+image (or linear image by using --log=False). Please note that if the
+input image has negative values then taking the log will generate nan
+outputs.
+
+The program can also take an optional mask image. This should contain
+0 values for regions to be masked out and 1 for included
+regions. There is a special value of -2 which causes a pixel to be
+excluded in the input but present in the output (the smoothing ignores
+this input pixel but calculates the smoothed image from the
+surrounding pixels), which is good for cosmetically hiding point
+sources.
+
+The smoothing signal to noise ratio (specified with --sn=VALUE) is the
+main input parameter. It is used to calculate the smoothing scale from
+the input counts image. At present the smoothing radius contains at
+least sn-squared counts. There is an intermediate generated file
+containing the smoothing scale (--scale=FILENAME) which contains the
+radius-squared in pixels of the smoothing scale (the radius is used as
+the Gaussian sigma when smoothing).
+
+An example usage:
+
+$ ./adaptive_ggm.py --sn=32 cts.fits grad.fits
+
+The full set of arguments include:
+
+$ ./adaptive_ggm.py --help
+usage: adaptive_ggm.py [-h] [--image IMAGE] [--sn SN] [--log LOG] [--mask MASK] [--scale SCALE] [--smimage SMIMAGE]
+                       [--threads THREADS] [--contbin-dir CONTBIN_DIR]
+                       counts output
+
+Adapive Gaussian gradient magnitude
+
+positional arguments:
+  counts                counts image filename
+  output                output image filename
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --image IMAGE         optional image filename to apply smoothing to (uses counts if not set) (default: None)
+  --sn SN               Smoothing S/N ratio (default: 32)
+  --log LOG             Calculate log after smoothing (default: True)
+  --mask MASK           Mask image (optional) (default: None)
+  --scale SCALE         Intermediate scale map filename (default: scale.fits)
+  --smimage SMIMAGE     Intermediate smoothed image filename (default: smoothed.fits)
+  --threads THREADS     Number of threads to use when smoothing (default: 4)
+  --contbin-dir CONTBIN_DIR
+                        Override location of contour binning code (default: None)
